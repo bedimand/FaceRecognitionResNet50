@@ -1,0 +1,30 @@
+data_dir: 'dataset'
+train_dir: 'dataset/train'
+val_split: 0.2
+batch_size: 64
+num_workers: 8
+epochs: 20
+learning_rate: 1e-4
+weight_decay: 1e-5
+device: 'cuda'
+pretrained: true
+checkpoint_dir: 'checkpoints'
+embedding_dim: 512
+threshold: 0.55
+embedding_db: 'embeddings.pkl'
+targets_dir: 'targets'
+seed: 42
+arcface: true
+arc_s: 30.0
+arc_m: 0.50
+arc_easy_margin: false
+image_processing:
+  target_size: [224, 224]
+use_amp: true
+lr_scheduler:
+  type: 'cosine'
+  T_max: 10
+  eta_min: 1e-6
+early_stopping:
+  patience: 3
+log_dir: 'runs'
