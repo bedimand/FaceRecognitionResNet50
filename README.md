@@ -1,4 +1,5 @@
 # Recognition-CNN
+**Acurácia de Validação: 91,43% (32256/35279)**
 
 Um sistema de reconhecimento facial em tempo real em Python, construído com PyTorch. Este repositório oferece duas funcionalidades principais:
 
@@ -24,6 +25,7 @@ Um sistema de reconhecimento facial em tempo real em Python, construído com PyT
   - [Executando o App](#executando-o-app)
   - [Controles e Uso](#controles-e-uso)
   - [Adicionando Novos Alvos](#adicionando-novos-alvos)
+- [Avaliação do Modelo (`evaluate_model.py`)](#avaliação-do-modelo-evaluate_modelpy)
 - [Resolução de Problemas](#resolução-de-problemas)
 - [Licença](#licença)
 
@@ -124,18 +126,25 @@ Ajuste conforme necessário para melhorar performance, trocar dispositivo ou alt
 
 ## Preparação do Dataset
 
-1. Crie a seguinte estrutura em `dataset/train/`, com uma subpasta para cada identidade:
+Neste projeto, utilizamos uma versão filtrada do dataset VGGFace2 (disponível em https://www.kaggle.com/datasets/hearfool/vggface2). Removemos a pasta de validação original e reorganizamos o diretório de treinamento para conter 500 identidades, cada uma com pelo menos 250 imagens, totalizando mais de 170.000 imagens.
 
-   ```text
+Estrutura de pastas após filtragem:
+```text
 dataset/train/
-├── PessoaA/
-│   ├── img1.jpg
-│   └── img2.jpg
-├── PessoaB/
+├── Pessoa1/
+│   ├── img001.jpg
+│   └── imgXXX.jpg
+├── Pessoa2/
 └── ...
-```  
-2. Adicione 5–100 imagens de cada pessoa, preferencialmente cortes de faces frontais.
-3. O script de treinamento irá dividir automaticamente em treino e validação com base em `val_split`.
+```
+
+Para garantir consistência, dividimos manualmente esse conjunto em:
+- **Treino**: 80% das imagens
+- **Validação**: 20% das imagens
+
+O script `src/train_model.py` também oferece uma divisão programática usando `val_split: 0.2` em `config.yaml` via `torch.utils.data.random_split`, reproduzindo a mesma proporção em tempo de execução.
+
+O processo de treinamento com esse conjunto levou aproximadamente **7 horas** em GPU para completar todas as 20 épocas.
 
 ---
 
@@ -228,6 +237,17 @@ Fluxo principal:
    - **`a`**: adiciona novo alvo em segundo plano (coleta N amostras em `targets/<Nome>/` e atualiza o banco).
    - **`c`**: captura uma amostra do rosto reconhecido e reconstrói o banco.
    - **`q`**: encerra a aplicação.
+
+---
+
+## Avaliação do Modelo (`evaluate_model.py`)
+
+Para avaliar a acurácia do modelo treinado, execute o script de avaliação:
+```bash
+python evaluate_model.py
+```
+
+O modelo alcançou uma acurácia de validação de **91,43%** (32256/35279).
 
 ---
 
