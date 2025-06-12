@@ -7,6 +7,10 @@ Replica o split de treino e validação (80/20) usado em src/train_model.py e av
 import os
 import torch
 from src.train_model import load_config, ClassifierNet, get_loaders
+import numpy as np
+from sklearn.metrics import confusion_matrix
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 def main():
     # Carrega configurações e dispositivo
@@ -41,6 +45,10 @@ def main():
     model.load_state_dict(state)
     model.eval()
 
+    # Coleta de verdadeiros e previstos para matriz de confusão
+    y_true = []
+    y_pred = []
+
     # Avalia acurácia no conjunto de validação
     total = 0
     correct = 0
@@ -54,11 +62,31 @@ def main():
             else:
                 outputs = model(inputs)
             preds = torch.argmax(outputs, dim=1)
+            # Registra labels para matriz de confusão
+            y_true.extend(labels.cpu().tolist())
+            y_pred.extend(preds.cpu().tolist())
             correct += (preds == labels).sum().item()
             total += labels.size(0)
 
     acc = correct / total if total > 0 else 0.0
     print(f'Acurácia na validação: {acc:.4f} ({correct}/{total})')
+
+    # Gera matriz de confusão para as K classes mais frequentes
+    cm = confusion_matrix(y_true, y_pred)
+    class_counts = np.bincount(y_true)
+    K = 20  # número de classes a plotar (ajuste conforme necessário)
+    topk_idx = np.argsort(class_counts)[-K:]
+    cm_sub = cm[np.ix_(topk_idx, topk_idx)]
+    sub_labels = [class_names[i] for i in topk_idx]
+
+    plt.figure(figsize=(12,10))
+    sns.heatmap(cm_sub, annot=True, fmt='d', xticklabels=sub_labels, yticklabels=sub_labels, cmap='Blues')
+    plt.title(f'Matriz de Confusão das {K} classes mais frequentes')
+    plt.ylabel('Verdadeiro')
+    plt.xlabel('Previsto')
+    plt.tight_layout()
+    plt.savefig('confusion_matrix_topk.png')
+    print('Salvou matriz de confusão em confusion_matrix_topk.png')
 
 if __name__ == '__main__':
     main() 

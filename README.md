@@ -249,6 +249,8 @@ python evaluate_model.py
 
 O modelo alcançou uma acurácia de validação de **91,43%** (32256/35279).
 
+![Matriz de Confusão das 20 classes mais frequentes](image/confusion_matrix_topk.png)
+
 ---
 
 ## Resolução de Problemas
