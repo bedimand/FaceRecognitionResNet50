@@ -1,5 +1,4 @@
 # Recognition-CNN
-**Acurácia de Validação: 91,43% (32256/35279)**
 
 Um sistema de reconhecimento facial em tempo real em Python, construído com PyTorch. Este repositório oferece duas funcionalidades principais:
 
